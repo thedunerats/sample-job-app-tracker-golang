@@ -1,0 +1,30 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+*_test.go
+*.test
+
+# Coverage reports
+*.out
+
+# Database files
+*.db
+
+# Binaries
+*.exe
+job-tracker

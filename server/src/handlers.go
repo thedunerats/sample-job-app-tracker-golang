@@ -28,22 +28,25 @@ func NewServer(db *Database) *Server {
 
 // routes defines all the API routes
 func (s *Server) routes() {
+	// Enable CORS for all routes
+	s.Router.Use(CORSMiddleware)
+
 	// Public routes
-	s.Router.HandleFunc("/api/auth/register", s.handleRegister).Methods("POST")
-	s.Router.HandleFunc("/api/auth/login", s.handleLogin).Methods("POST")
+	s.Router.HandleFunc("/api/auth/register", s.handleRegister).Methods("POST", "OPTIONS")
+	s.Router.HandleFunc("/api/auth/login", s.handleLogin).Methods("POST", "OPTIONS")
 
 	// Protected routes (require authentication)
 	api := s.Router.PathPrefix("/api").Subrouter()
 	api.Use(s.AuthMiddleware)
 
-	api.HandleFunc("/auth/me", s.handleGetCurrentUser).Methods("GET")
-	api.HandleFunc("/jobs", s.handleGetAllJobs).Methods("GET")
-	api.HandleFunc("/jobs", s.handleCreateJob).Methods("POST")
-	api.HandleFunc("/jobs/search", s.handleSearchJobs).Methods("GET")
-	api.HandleFunc("/jobs/{id}", s.handleGetJob).Methods("GET")
-	api.HandleFunc("/jobs/{id}", s.handleUpdateJob).Methods("PUT")
-	api.HandleFunc("/jobs/{id}", s.handleDeleteJob).Methods("DELETE")
-	api.HandleFunc("/jobs/status/{status}", s.handleGetJobsByStatus).Methods("GET")
+	api.HandleFunc("/auth/me", s.handleGetCurrentUser).Methods("GET", "OPTIONS")
+	api.HandleFunc("/jobs", s.handleGetAllJobs).Methods("GET", "OPTIONS")
+	api.HandleFunc("/jobs", s.handleCreateJob).Methods("POST", "OPTIONS")
+	api.HandleFunc("/jobs/search", s.handleSearchJobs).Methods("GET", "OPTIONS")
+	api.HandleFunc("/jobs/{id}", s.handleGetJob).Methods("GET", "OPTIONS")
+	api.HandleFunc("/jobs/{id}", s.handleUpdateJob).Methods("PUT", "OPTIONS")
+	api.HandleFunc("/jobs/{id}", s.handleDeleteJob).Methods("DELETE", "OPTIONS")
+	api.HandleFunc("/jobs/status/{status}", s.handleGetJobsByStatus).Methods("GET", "OPTIONS")
 }
 
 // handleGetAllJobs retrieves all job applications with pagination

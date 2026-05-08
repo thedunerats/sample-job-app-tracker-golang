@@ -1,0 +1,39 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github
+
+# Dependencies (will be installed in container)
+node_modules
+package-lock.json
+
+# Build output (will be built in container)
+dist
+.angular
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+*.spec.ts
+test
+
+# Coverage reports
+coverage
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db

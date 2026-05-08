@@ -1,0 +1,54 @@
+# Docker Compose for Development
+# This version uses volume mounts for live code reloading
+
+version: '3.8'
+
+services:
+  # Backend API Server - Development Mode
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: job-tracker-backend-dev
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_PATH=/home/appuser/data/job_tracker.db
+    volumes:
+      # Mount source code for development
+      - ./server/src:/app/src:ro
+      # Persist database
+      - backend-data:/home/appuser/data
+    networks:
+      - job-tracker-network
+    command: ["go", "run", "/app/src/main.go"]
+
+  # Frontend - Development Mode
+  frontend:
+    image: node:18-alpine
+    container_name: job-tracker-frontend-dev
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # Mount source code for live reload
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - job-tracker-network
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - backend
+
+networks:
+  job-tracker-network:
+    driver: bridge
+
+volumes:
+  backend-data:
+    driver: local

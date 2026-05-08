@@ -1,4 +1,4 @@
-name: Run Tests
+name: Build and Test
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
-    name: Run Unit Tests
+  backend:
+    name: Backend - Build & Test
     runs-on: ubuntu-latest
     
     steps:
@@ -32,6 +32,10 @@ jobs:
       working-directory: ./server
       run: go mod download
       
+    - name: Build backend
+      working-directory: ./server/src
+      run: go build -v -o job-tracker
+      
     - name: Run tests
       working-directory: ./server/src
       run: go test -v -race -coverprofile=coverage.out -covermode=atomic
@@ -40,5 +44,99 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         file: ./server/src/coverage.out
-        flags: unittests
-        name: codecov-umbrella
+        flags: backend
+        name: backend-coverage
+
+  frontend:
+    name: Frontend - Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ./client/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./client
+      run: npm ci
+      
+    - name: Build frontend
+      working-directory: ./client
+      run: npm run build
+      
+    - name: Run tests
+      working-directory: ./client
+      run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./client/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+
+  docker:
+    name: Docker - Build Images
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build backend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./server
+        file: ./server/Dockerfile
+        push: false
+        tags: job-tracker-backend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Build frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./client
+        file: ./client/Dockerfile
+        push: false
+        tags: job-tracker-frontend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Test Docker Compose
+      run: |
+        docker compose config
+        docker compose build --no-cache
+        
+    - name: Start services
+      run: |
+        docker compose up -d
+        sleep 10
+        
+    - name: Check backend health
+      run: |
+        curl --fail --retry 5 --retry-delay 2 http://localhost:8080/api/jobs || exit 1
+        
+    - name: Check frontend health
+      run: |
+        curl --fail --retry 5 --retry-delay 2 http://localhost/ || exit 1
+        
+    - name: Show logs on failure
+      if: failure()
+      run: |
+        docker compose logs
+        
+    - name: Cleanup
+      if: always()
+      run: |
+        docker compose down -v
+
