@@ -31,6 +31,9 @@ func (s *Server) routes() {
 	// Enable CORS for all routes
 	s.Router.Use(CORSMiddleware)
 
+	// Health check endpoint (no auth required)
+	s.Router.HandleFunc("/health", s.handleHealth).Methods("GET", "OPTIONS")
+
 	// Public routes
 	s.Router.HandleFunc("/api/auth/register", s.handleRegister).Methods("POST", "OPTIONS")
 	s.Router.HandleFunc("/api/auth/login", s.handleLogin).Methods("POST", "OPTIONS")
@@ -47,6 +50,14 @@ func (s *Server) routes() {
 	api.HandleFunc("/jobs/{id}", s.handleUpdateJob).Methods("PUT", "OPTIONS")
 	api.HandleFunc("/jobs/{id}", s.handleDeleteJob).Methods("DELETE", "OPTIONS")
 	api.HandleFunc("/jobs/status/{status}", s.handleGetJobsByStatus).Methods("GET", "OPTIONS")
+}
+
+// handleHealth returns a simple health check response
+func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
+	respondWithJSON(w, http.StatusOK, map[string]string{
+		"status": "healthy",
+		"service": "job-tracker-api",
+	})
 }
 
 // handleGetAllJobs retrieves all job applications with pagination

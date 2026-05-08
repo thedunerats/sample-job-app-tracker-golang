@@ -70,8 +70,15 @@ jobs:
       working-directory: ./client
       run: npm run build
       
+    - name: Install Chrome for tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y chromium-browser
+      
     - name: Run tests
       working-directory: ./client
+      env:
+        CHROME_BIN: /usr/bin/chromium-browser
       run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
       
     - name: Upload coverage reports
@@ -124,7 +131,7 @@ jobs:
         
     - name: Check backend health
       run: |
-        curl --fail --retry 5 --retry-delay 2 http://localhost:8080/api/jobs || exit 1
+        curl --fail --retry 5 --retry-delay 2 http://localhost:8080/health || exit 1
         
     - name: Check frontend health
       run: |

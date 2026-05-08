@@ -13,8 +13,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build -- --configuration production
+# Build the application (production build by default)
+RUN npm run build
 
 # Final stage - serve with nginx
 FROM nginx:alpine
