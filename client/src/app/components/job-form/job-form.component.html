@@ -1,0 +1,125 @@
+<div class="job-form-container">
+  <div class="job-form-card">
+    <h2>{{ isEditMode ? 'Edit' : 'Add New' }} Job Application</h2>
+    
+    <form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="company">Company *</label>
+          <input 
+            type="text" 
+            id="company" 
+            formControlName="company" 
+            class="form-control"
+            [class.error]="jobForm.get('company')?.invalid && jobForm.get('company')?.touched"
+          >
+          <div class="error-message" *ngIf="jobForm.get('company')?.invalid && jobForm.get('company')?.touched">
+            Company is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="position">Position *</label>
+          <input 
+            type="text" 
+            id="position" 
+            formControlName="position" 
+            class="form-control"
+            [class.error]="jobForm.get('position')?.invalid && jobForm.get('position')?.touched"
+          >
+          <div class="error-message" *ngIf="jobForm.get('position')?.invalid && jobForm.get('position')?.touched">
+            Position is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="status">Status *</label>
+          <select 
+            id="status" 
+            formControlName="status" 
+            class="form-control"
+            [class.error]="jobForm.get('status')?.invalid && jobForm.get('status')?.touched"
+          >
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Accepted">Accepted</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="applied_date">Applied Date *</label>
+          <input 
+            type="date" 
+            id="applied_date" 
+            formControlName="applied_date" 
+            class="form-control"
+            [class.error]="jobForm.get('applied_date')?.invalid && jobForm.get('applied_date')?.touched"
+          >
+          <div class="error-message" *ngIf="jobForm.get('applied_date')?.invalid && jobForm.get('applied_date')?.touched">
+            Applied date is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input 
+            type="text" 
+            id="location" 
+            formControlName="location" 
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="salary">Salary</label>
+          <input 
+            type="text" 
+            id="salary" 
+            formControlName="salary" 
+            class="form-control"
+            placeholder="e.g., $80,000 - $100,000"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contact_info">Contact Info</label>
+        <input 
+          type="text" 
+          id="contact_info" 
+          formControlName="contact_info" 
+          class="form-control"
+          placeholder="Recruiter name, email, phone, etc."
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea 
+          id="notes" 
+          formControlName="notes" 
+          class="form-control"
+          rows="4"
+          placeholder="Additional notes about the application..."
+        ></textarea>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="jobForm.invalid || loading">
+          {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+        </button>
+        <a routerLink="/jobs" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
