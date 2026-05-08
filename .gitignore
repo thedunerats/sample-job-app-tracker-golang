@@ -1,0 +1,34 @@
+# NOTE: go.mod and go.sum should be committed!
+# They are required for dependency management and reproducible builds.
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Database files
+*.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Go workspace file
+go.work
