@@ -12,7 +12,8 @@ A full-stack application for tracking job applications with a **Go backend** and
 - **Pagination**: Efficient data loading with customizable page sizes
 - **CORS Support**: Configured for cross-origin requests
 - **SQLite Database**: Lightweight, file-based database with auto-migration
-- **Comprehensive Testing**: 15 unit tests with full coverage
+- **Comprehensive Testing**: 29 tests organized by module with full coverage
+- **Code Quality**: Verified with `go fmt` and `go vet`
 - **CI/CD**: GitHub Actions workflow for automated testing
 
 ### Frontend (Angular 17)
@@ -50,13 +51,16 @@ A full-stack application for tracking job applications with a **Go backend** and
         ├── main.go           # Application entry point
         ├── database.go       # Database initialization with auto-migration
         ├── models.go         # Data structures and types
-        ├── handlers.go       # HTTP request handlers and routing
+        ├── handlers.go       # Job CRUD operations and routing
         ├── auth.go           # JWT token management and password hashing
-        ├── auth_handlers.go  # Authentication endpoints
-        ├── middleware.go     # Authentication middleware
+        ├── auth_handlers.go  # Authentication endpoints (register/login)
+        ├── middleware.go     # Authentication & authorization middleware
         ├── cors.go           # CORS middleware
-        ├── auth_test.go      # Authentication tests (6 tests)
-        └── features_test.go  # Integration tests (9 tests, 23 subtests)
+        ├── auth_test.go      # Auth utility tests (6 tests)
+        ├── auth_handlers_test.go  # Auth endpoint tests (4 tests)
+        ├── database_test.go  # Database layer tests (6 tests)
+        ├── handlers_test.go  # Job handler tests (11 tests)
+        └── middleware_test.go # Middleware tests (2 tests)
 ```
 
 ## Quick Start
@@ -468,22 +472,57 @@ curl -X DELETE http://localhost:8080/api/jobs/1 \
 
 ### Backend Tests
 
-The Go backend has comprehensive test coverage with 15 tests:
+The Go backend has comprehensive test coverage with **29 tests** organized by module:
 
-**Authentication Tests** (`auth_test.go` - 6 tests):
-- Password hashing and verification
-- JWT token generation and validation
+**Authentication Utility Tests** (`auth_test.go` - 6 tests):
+- Password hashing with bcrypt
+- Password verification
+- JWT token generation
+- JWT token validation
 - Token expiration handling
 - Multiple token generation
 
-**Feature Integration Tests** (`features_test.go` - 9 tests, 23 subtests):
-- User registration (success and validation errors)
-- User login (success and invalid credentials)
-- Pagination (first page, middle page, last page, custom page sizes)
-- Search functionality (company, position, status, location, combined filters)
-- Authentication requirements (all protected endpoints)
-- User data isolation
-- Job creation with authentication
+**Authentication Handler Tests** (`auth_handlers_test.go` - 4 tests):
+- User registration success
+- User registration validation errors
+- User login success
+- User login with invalid credentials
+
+**Database Tests** (`database_test.go` - 6 tests):
+- Database initialization
+- Job creation (SQL level)
+- Job retrieval (SQL level)
+- Job updates (SQL level)
+- Job deletion (SQL level)
+- Filtering jobs by status (SQL level)
+
+**Handler Tests** (`handlers_test.go` - 11 tests):
+- Get all jobs with pagination
+- Create job with authentication
+- Create job validation (missing required fields)
+- Get single job by ID
+- Get job not found (404 handling)
+- Update job (partial updates)
+- Delete job
+- Get jobs by status filter
+- Pagination (multiple page sizes and offsets)
+- Search functionality (company, position, status, location, combined)
+- Complete workflow (create → read → update → search → delete)
+
+**Middleware Tests** (`middleware_test.go` - 2 tests):
+- Authentication requirement enforcement
+- User data isolation (users can only access their own data)
+
+**Test Organization:**
+All test files follow Go conventions:
+- Named `*_test.go` to match the source file they test
+- Located in the same package/directory as the source code
+- Example: `handlers.go` is tested by `handlers_test.go`
+
+**Code Quality:**
+- All code is formatted with `go fmt`
+- All code passes `go vet` static analysis
+- Zero compilation warnings or errors
 
 Run all tests:
 ```powershell
@@ -500,6 +539,16 @@ go tool cover -html=coverage.out
 Run with race detection:
 ```powershell
 go test -v -race
+```
+
+Format code:
+```powershell
+go fmt ./...
+```
+
+Run static analysis:
+```powershell
+go vet ./...
 ```
 
 ### Frontend Tests
