@@ -55,7 +55,7 @@ func (s *Server) routes() {
 // handleHealth returns a simple health check response
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, map[string]string{
-		"status": "healthy",
+		"status":  "healthy",
 		"service": "job-tracker-api",
 	})
 }
@@ -71,7 +71,7 @@ func (s *Server) handleGetAllJobs(w http.ResponseWriter, r *http.Request) {
 	// Parse pagination parameters
 	page := parseIntQuery(r, "page", 1)
 	limit := parseIntQuery(r, "limit", 10)
-	
+
 	if page < 1 {
 		page = 1
 	}
@@ -426,7 +426,7 @@ func (s *Server) handleSearchJobs(w http.ResponseWriter, r *http.Request) {
 	searchQuery := `SELECT id, user_id, company, position, status, applied_date, notes, 
 					contact_info, salary, location, created_at, updated_at ` +
 		baseQuery + " ORDER BY applied_date DESC LIMIT ? OFFSET ?"
-	
+
 	searchArgs := append(args, limit, offset)
 	rows, err := s.DB.Query(searchQuery, searchArgs...)
 	if err != nil {
@@ -466,12 +466,12 @@ func parseIntQuery(r *http.Request, key string, defaultValue int) int {
 	if value == "" {
 		return defaultValue
 	}
-	
+
 	intValue, err := strconv.Atoi(value)
 	if err != nil {
 		return defaultValue
 	}
-	
+
 	return intValue
 }
 

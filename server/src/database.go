@@ -38,11 +38,11 @@ func (db *Database) createTables() error {
 	// Check if users table exists
 	var usersExists int
 	db.QueryRow("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='users'").Scan(&usersExists)
-	
+
 	// Check if job_applications has user_id column
 	var hasUserID int
 	db.QueryRow("SELECT COUNT(*) FROM pragma_table_info('job_applications') WHERE name='user_id'").Scan(&hasUserID)
-	
+
 	// If tables need migration, drop and recreate
 	if usersExists == 0 || hasUserID == 0 {
 		log.Println("Migrating database schema...")
@@ -51,7 +51,7 @@ func (db *Database) createTables() error {
 			return err
 		}
 	}
-	
+
 	query := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,

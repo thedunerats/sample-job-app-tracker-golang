@@ -36,7 +36,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// Insert user into database
 	query := `INSERT INTO users (email, password, name, created_at, updated_at) 
 			  VALUES (?, ?, ?, ?, ?)`
-	
+
 	now := time.Now()
 	result, err := s.DB.Exec(query, req.Email, hashedPassword, req.Name, now, now)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch user from database
 	query := `SELECT id, email, password, name, created_at, updated_at FROM users WHERE email = ?`
-	
+
 	var user User
 	err := s.DB.QueryRow(query, req.Email).Scan(
 		&user.ID, &user.Email, &user.Password, &user.Name, &user.CreatedAt, &user.UpdatedAt)
@@ -132,7 +132,7 @@ func (s *Server) handleGetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := `SELECT id, email, name, created_at, updated_at FROM users WHERE id = ?`
-	
+
 	var user User
 	err := s.DB.QueryRow(query, claims.UserID).Scan(
 		&user.ID, &user.Email, &user.Name, &user.CreatedAt, &user.UpdatedAt)
