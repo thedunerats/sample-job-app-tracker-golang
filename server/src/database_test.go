@@ -189,7 +189,7 @@ func TestDeleteJob(t *testing.T) {
 	}
 }
 
-func TestGetJobsByStatus(t *testing.T) {
+func TestDatabaseGetJobsByStatus(t *testing.T) {
 	db := setupTestDB(t)
 	userID := createTestUserDB(t, db)
 
